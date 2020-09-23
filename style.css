@@ -23,6 +23,11 @@
     outline: unset;
     text-align: right;
 }
+.screen #sub-result {
+    font-size: 13px;
+    padding: 7px 5px;
+    text-align: right;
+}
 .content {
     position: absolute;
     top: 50%;
@@ -33,14 +38,23 @@
     height: auto;
     padding: 5px;
     background-color: #f6f6f6;
-    max-width: 340px;
+    max-width: 316px;
 }
 .buttons .button {
     display: inline-block;
     width: 75px;
     height: 75px;
-    background-color: #999;
-    font-size: 25px;
-    margin: 5px;
+    background-color: #fff;
+    font-size: 23px;
+    margin: 2px;
     float: left;
+    text-align: center;
+    line-height: 75px;
+}
+.buttons .button.gray {
+    background-color: rgba(255, 255, 255, .7);
+}
+.buttons .button:hover {
+    cursor: pointer;
+    background-color: #e6e6e6;
 }
