@@ -11,6 +11,9 @@ var Calculator = /** @class */ (function () {
         document.addEventListener("keydown", function (e) {
             if (e.isComposing)
                 return;
+            if (e.key === "Enter") {
+                _this.showResult();
+            }
             if (_this.isCharDigit(e.key)) {
                 _this.addNumber(e.key);
             }
@@ -33,22 +36,29 @@ var Calculator = /** @class */ (function () {
                 this.screen.value += key;
                 break;
             case "+":
+                this.result += parseFloat(this.screen.value);
                 this.subResultCalc(key);
                 break;
             case "-":
+                this.result -= parseFloat(this.screen.value);
                 this.subResultCalc(key);
                 break;
             case "*":
+                this.result *= parseFloat(this.screen.value);
                 this.subResultCalc(key);
                 break;
             case "/":
+                this.result /= parseFloat(this.screen.value);
                 this.subResultCalc(key);
                 break;
         }
     };
     Calculator.prototype.subResultCalc = function (key) {
-        this.subResult.innerHTML += this.screen.value + " " + key;
+        this.subResult.innerHTML += this.screen.value + " " + key + " ";
         this.screen.value = "";
+    };
+    Calculator.prototype.showResult = function () {
+        this.screen.value = this.result;
     };
     return Calculator;
 }());
