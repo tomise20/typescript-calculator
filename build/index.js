@@ -1,6 +1,4 @@
 "use strict";
-//import Operations from './Operations';
-//var op = new Operations();
 class Calculator {
     constructor() {
         this.screen = document.getElementById("screenInput");
@@ -9,35 +7,41 @@ class Calculator {
         this.operations = "";
         this.isCharDigit = (n) => !!n.trim() && n > -1;
         document.querySelectorAll("span[data-type='number']").forEach(item => {
-            item.addEventListener('click', (e) => this.addNumber(item.textContent));
+            item.addEventListener('click', _ => this.addNumber(item.textContent));
         });
         document.addEventListener("keydown", e => {
             if (e.isComposing)
                 return;
-            if (e.key === "Enter") {
-                this.showResult();
-            }
+            console.log(e.key);
             if (this.isCharDigit(e.key)) {
                 this.addNumber(e.key);
             }
             else {
                 switch (e.key) {
-                    case ",":
+                    case "Backspace":
+                        let length = this.screen.value.length;
+                        this.screen.value = this.screen.value.substring(0, (length - 1));
+                        break;
+                    case "Enter":
+                        this.showResult();
+                        break;
+                    case "Delete":
+                        this.reset();
+                        break;
+                    case ".":
                         this.screen.value += e.key;
                         break;
                     case "+":
-                        this.operations += this.screen.value;
                         this.cleanScreen(e.key);
                         break;
                     case "-":
-                        this.operations += this.screen.value;
                         this.cleanScreen(e.key);
                         break;
                     case "*":
-                        this.result *= parseFloat(this.screen.value);
+                        this.cleanScreen(e.key);
                         break;
                     case "/":
-                        this.result /= parseFloat(this.screen.value);
+                        this.cleanScreen(e.key);
                         break;
                 }
             }
@@ -52,7 +56,7 @@ class Calculator {
         }
     }
     cleanScreen(key) {
-        this.subResult.innerHTML += this.screen.value + " " + key + " ";
+        this.subResult.innerHTML += parseFloat(this.screen.value) + " " + key + " ";
         this.operations += this.screen.value + key;
         this.screen.value = "";
         console.log(this.operations);
@@ -60,10 +64,16 @@ class Calculator {
     showResult() {
         if (this.screen.value === "")
             return;
+        this.subResult.innerHTML += this.screen.value + " =";
         this.operations += this.screen.value;
         this.result = eval(this.operations);
         this.screen.value = this.result;
-        this.operations = this.result;
+        this.operations = "";
+    }
+    reset() {
+        this.screen.value = "0";
+        this.operations = "";
+        this.subResult.innerHTML = "";
     }
 }
 new Calculator();
