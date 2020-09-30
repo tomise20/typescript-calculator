@@ -2,50 +2,71 @@
 class Calculator {
     constructor() {
         this.screen = document.getElementById("screenInput");
-        this.subResult = document.getElementById("sub-result");
+        this.subresult = document.getElementById("sub-result");
         this.result = 0;
         this.operations = "";
+        this.clearSubresult = false;
         this.isCharDigit = (n) => !!n.trim() && n > -1;
         document.querySelectorAll("span[data-type='number']").forEach(item => {
             item.addEventListener('click', _ => this.addNumber(item.textContent));
         });
+        document.querySelectorAll("span[data-type='operation']").forEach(item => {
+            item.addEventListener('click', _ => this.actions(item.getAttribute('data-func')));
+        });
         document.addEventListener("keydown", e => {
             if (e.isComposing)
                 return;
-            console.log(e.key);
-            if (this.isCharDigit(e.key)) {
-                this.addNumber(e.key);
-            }
-            else {
-                switch (e.key) {
-                    case "Backspace":
-                        let length = this.screen.value.length;
-                        this.screen.value = this.screen.value.substring(0, (length - 1));
-                        break;
-                    case "Enter":
-                        this.showResult();
-                        break;
-                    case "Delete":
-                        this.reset();
-                        break;
-                    case ".":
-                        this.screen.value += e.key;
-                        break;
-                    case "+":
-                        this.cleanScreen(e.key);
-                        break;
-                    case "-":
-                        this.cleanScreen(e.key);
-                        break;
-                    case "*":
-                        this.cleanScreen(e.key);
-                        break;
-                    case "/":
-                        this.cleanScreen(e.key);
-                        break;
-                }
-            }
+            this.separator(e.key);
         });
+    }
+    actions(funcName) {
+        switch (funcName) {
+            case "clear":
+                this.reset();
+                break;
+            case "clearScreen":
+                this.screen.value = "0";
+                break;
+            case "clearSubresult":
+                this.subresult.innerHTML = "";
+                break;
+            case "sqrt":
+                this.square(parseFloat(this.screen.value));
+        }
+    }
+    separator(key) {
+        if (this.isCharDigit(key)) {
+            this.addNumber(key);
+        }
+        else {
+            switch (key) {
+                case "Backspace":
+                    let length = this.screen.value.length;
+                    this.screen.value = this.screen.value.substring(0, (length - 1));
+                    break;
+                case "Enter":
+                    this.showResult();
+                    break;
+                case "Delete":
+                    this.reset();
+                    break;
+                case ".":
+                    this.screen.value += key;
+                    break;
+                case "+":
+                    this.cleanScreen(key);
+                    break;
+                case "-":
+                    this.cleanScreen(key);
+                    break;
+                case "*":
+                    this.cleanScreen(key);
+                    break;
+                case "/":
+                    this.cleanScreen(key);
+                    break;
+            }
+        }
     }
     addNumber(param) {
         if (this.screen.value === "0") {
@@ -56,24 +77,44 @@ class Calculator {
         }
     }
     cleanScreen(key) {
-        this.subResult.innerHTML += parseFloat(this.screen.value) + " " + key + " ";
-        this.operations += this.screen.value + key;
-        this.screen.value = "";
-        console.log(this.operations);
-    }
-    showResult() {
         if (this.screen.value === "")
             return;
-        this.subResult.innerHTML += this.screen.value + " =";
+        if (this.clearSubresult) {
+            this.subresult.innerHTML = "";
+            this.clearSubresult = false;
+        }
+        this.subresult.innerHTML += parseFloat(this.screen.value) + " " + key + " ";
+        this.operations += this.screen.value + key;
+        this.screen.value = "";
+    }
+    showResult() {
+        if (this.screen.value === "" && this.subresult.innerHTML.length == 0)
+            return;
         this.operations += this.screen.value;
-        this.result = eval(this.operations);
-        this.screen.value = this.result;
+        this.checkResult();
+        this.subresult.innerHTML += this.screen.value + " =";
+        this.screen.value = this.result.toString();
         this.operations = "";
+        this.clearSubresult = true;
+    }
+    checkResult() {
+        let length = this.operations.length;
+        let subresultLegth = this.subresult.innerHTML.length;
+        let lastChar = this.operations.substring((length - 1));
+        if (!this.isCharDigit(lastChar) && this.screen.value === "") {
+            this.operations = this.operations.substr(0, (length - 1));
+            this.subresult.innerHTML = this.subresult.innerHTML.substr(0, (subresultLegth - 2));
+        }
+        this.result = eval(this.operations);
     }
     reset() {
         this.screen.value = "0";
         this.operations = "";
-        this.subResult.innerHTML = "";
+        this.subresult.innerHTML = "";
+    }
+    square(num) {
+        this.subresult.innerHTML += `sqr(${parseFloat(this.screen.value)})`;
+        this.screen.value = Math.pow(num, 2).toString();
     }
 }
 new Calculator();

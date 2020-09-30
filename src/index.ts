@@ -1,58 +1,74 @@
 class Calculator {
     screen: HTMLInputElement = <HTMLInputElement>document.getElementById("screenInput");
-    subResult: HTMLDivElement = <HTMLDivElement>document.getElementById("sub-result");
+    subresult: HTMLDivElement = <HTMLDivElement>document.getElementById("sub-result");
     result: number = 0;
     operations: string = "";
+    clearSubresult: boolean = false;
 
     constructor() {
         document.querySelectorAll("span[data-type='number']").forEach(item => {
             item.addEventListener('click', _ => this.addNumber(item.textContent));
         });
 
-        document.querySelectorAll("[data-func]").forEach(item => {
-            item.addEventListener('click', _ => this.addNumber(item.textContent));
+        document.querySelectorAll("span[data-type='operation']").forEach(item => {
+            item.addEventListener('click', _ => this.actions(item.getAttribute('data-func')));
         });
 
-          document.addEventListener("keydown", e => {
+        document.addEventListener("keydown", e => {
             if (e.isComposing) return;
+            this.separator(e.key);
+        });
+    }
 
-            console.log(e.key);
+    actions(funcName: (string | null)) {
+        switch(funcName) {
+            case "clear":
+                this.reset();
+                break;
+            case "clearScreen":
+                this.screen.value = "0";
+                break;
+            case "clearSubresult":
+                this.subresult.innerHTML = "";
+                break;
+            case "pow":
+                this.square(parseFloat(this.screen.value));
+                break;
+        }
+    }
 
-
-            if(this.isCharDigit(e.key)) {
-                this.addNumber(e.key);
-            } else {
-                switch(e.key) {
-                    case "Backspace":
-                        let length = this.screen.value.length;
-                        this.screen.value = this.screen.value.substring(0, (length - 1));
-                        break;
-                    case "Enter":
-                        this.showResult();
-                        break;
-                    case "Delete":
-                        this.reset();
-                        break;
-                    case ".":
-                        this.screen.value += e.key;
-                        break;
-                    case "+":
-                        this.cleanScreen(e.key);
-                        break;
-                    case "-":
-                        this.cleanScreen(e.key);
-                        break;
-                    case "*":
-                        this.cleanScreen(e.key);
-                        break;
-                    case "/":
-                        this.cleanScreen(e.key);
-                        break;
-                }
+    separator(key: string) {
+        if(this.isCharDigit(key)) {
+            this.addNumber(key);
+        } else {
+            switch(key) {
+                case "Backspace":
+                    let length = this.screen.value.length;
+                    this.screen.value = this.screen.value.substring(0, (length - 1));
+                    break;
+                case "Enter":
+                    this.showResult();
+                    break;
+                case "Delete":
+                    this.reset();
+                    break;
+                case ".":
+                    this.screen.value += key;
+                    break;
+                case "+":
+                    this.cleanScreen(key);
+                    break;
+                case "-":
+                    this.cleanScreen(key);
+                    break;
+                case "*":
+                    this.cleanScreen(key);
+                    break;
+                case "/":
+                    this.cleanScreen(key);
+                    break;
             }
-            
-          });
-
+        }
     }
 
     addNumber(param: any): void {
@@ -65,28 +81,53 @@ class Calculator {
     }
 
     cleanScreen(key: string): void {
-        this.subResult.innerHTML += parseFloat(this.screen.value) + " " + key + " ";
+        if(this.screen.value === "") return;
+
+        if(this.clearSubresult) {
+            this.subresult.innerHTML = "";
+            this.clearSubresult = false;
+        }
+
+        this.subresult.innerHTML += parseFloat(this.screen.value) + " " + key + " ";
         this.operations += this.screen.value + key;
         this.screen.value = "";
-        console.log(this.operations);
     }
 
     isCharDigit = (n: any) => !!n.trim() && n > -1;
 
     showResult(): void {
-        if(this.screen.value === "") return;
+        if(this.screen.value === "" && this.subresult.innerHTML.length == 0) return;
 
-        this.subResult.innerHTML += this.screen.value + " =";
         this.operations += this.screen.value;
-        this.result = eval(this.operations);
-        this.screen.value = <any>this.result;
+        this.checkResult();
+        this.subresult.innerHTML += this.screen.value + " =";
+        this.screen.value = this.result.toString();
         this.operations = "";
+        this.clearSubresult = true;
     }
 
-    reset() {
+    checkResult(): void {
+        let length: number = this.operations.length;
+        let subresultLegth: number = this.subresult.innerHTML.length;
+        let lastChar: string = this.operations.substring((length - 1));
+        
+        if(!this.isCharDigit(lastChar) && this.screen.value === "") {
+            this.operations = this.operations.substr(0, (length - 1));
+            this.subresult.innerHTML = this.subresult.innerHTML.substr(0, (subresultLegth - 2));
+        }
+
+        this.result = eval(this.operations);
+    }
+
+    reset(): void {
         this.screen.value = "0";
         this.operations = "";
-        this.subResult.innerHTML = "";
+        this.subresult.innerHTML = "";
+    }
+
+    square(num: number) {
+        this.subresult.innerHTML += `sqr(${parseFloat(this.screen.value)})`;
+        this.screen.value = Math.pow(num, 2).toString();
     }
 }
 
