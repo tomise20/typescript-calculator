@@ -61,7 +61,6 @@ class Calculator {
                 this.onePerX();
                 break;
         }
-        console.log(this.operations);
     }
     separator(key) {
         if (this.isCharDigit(key)) {
@@ -104,13 +103,16 @@ class Calculator {
             this.subresult.innerHTML = this.screen.value;
             this.clearSubresult = false;
         }
-        if (this.screen.value === "0")
+        console.log(this.screen.value === "0");
+        if (this.screen.value === "0") {
             this.screen.value = param;
-        else
+            this.subresult.innerHTML = param;
+        }
+        else {
             this.screen.value += param;
+            this.addSubresult(param);
+        }
         this.operations += param;
-        this.addSubresult(`${param}`);
-        console.log(this.operations);
     }
     addSubresult(text) {
         this.subresult.innerHTML += text;
@@ -152,13 +154,10 @@ class Calculator {
         else {
             num = parseFloat(this.screen.value);
         }
-        if (this.lastOperationsIsFunc) {
-            this.operations = "";
+        if (this.lastOperationsIsFunc)
             content = `sqr(${this.subresult.innerHTML})`;
-        }
-        else {
+        else
             content = `sqr(${num})`;
-        }
         let operations = Math.pow(num, 2).toString();
         this.funcOperation(operations, content);
     }
@@ -173,13 +172,10 @@ class Calculator {
         else {
             num = parseFloat(this.screen.value);
         }
-        if (this.lastOperationsIsFunc) {
-            this.operations = "";
+        if (this.lastOperationsIsFunc)
             content = `&#8730;(${this.subresult.innerHTML})`;
-        }
-        else {
+        else
             content = `&#8730;(${num})`;
-        }
         let operations = Math.sqrt(num).toString();
         this.funcOperation(operations, content);
     }
@@ -194,13 +190,10 @@ class Calculator {
         else {
             num = parseFloat(this.screen.value);
         }
-        if (this.lastOperationsIsFunc) {
-            this.operations = "";
+        if (this.lastOperationsIsFunc)
             content = `1/(${this.subresult.innerHTML})`;
-        }
-        else {
+        else
             content = `1/(${num})`;
-        }
         let operations = (1 / num).toString();
         this.funcOperation(operations, content);
     }

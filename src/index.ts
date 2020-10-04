@@ -106,12 +106,18 @@ class Calculator {
             this.subresult.innerHTML = this.screen.value;
             this.clearSubresult = false;
         }
+        
+        console.log(this.screen.value === "0");
 
-        if(this.screen.value === "0") this.screen.value = param;
-        else this.screen.value += param;
+        if(this.screen.value === "0") {
+            this.screen.value = param;
+            this.subresult.innerHTML = param;
+        } else {
+            this.screen.value += param;
+            this.addSubresult(param);
+        }
         
         this.operations += param;
-        this.addSubresult(`${param}`);
     }
 
     addSubresult(text: string) {
