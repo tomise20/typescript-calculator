@@ -106,12 +106,10 @@ class Calculator {
             this.subresult.innerHTML = this.screen.value;
             this.clearSubresult = false;
         }
-        
-        console.log(this.screen.value === "0");
 
         if(this.screen.value === "0") {
             this.screen.value = param;
-            this.subresult.innerHTML = param;
+            this.addSubresult(param, true);
         } else {
             this.screen.value += param;
             this.addSubresult(param);
@@ -120,15 +118,17 @@ class Calculator {
         this.operations += param;
     }
 
-    addSubresult(text: string) {
-        this.subresult.innerHTML += text;
+    addSubresult(text: string, change: boolean = false) {
+
+        if(change) this.subresult.innerHTML = text;
+        else this.subresult.innerHTML += text;
     }
 
     addOperations(key: (string | null) = null) {
         if(this.screen.value === "") return;
 
         if(this.clearSubresult) {
-            this.subresult.innerHTML = this.screen.value;
+            this.addSubresult(this.screen.value, true);
             this.clearSubresult = false;
         }
 
@@ -221,9 +221,9 @@ class Calculator {
             let lastChar: string =this.subresult.innerHTML.substr(this.subresult.innerHTML.length - 1);
             if(lastChar === "=") {
                 this.operations = "";
-                this.subresult.innerHTML = "";
+                this.addSubresult("", true);
             } else {
-                this.subresult.innerHTML = this.screen.value;
+                this.addSubresult(this.screen.value, true);
             }
 
             this.clearSubresult = false;
@@ -231,7 +231,7 @@ class Calculator {
 
         if(this.lastOperationsIsFunc) {
             this.operations = "";
-            this.subresult.innerHTML = content;
+            this.addSubresult(content, true)
         } else {
             this.addSubresult(content);
         }
@@ -247,7 +247,7 @@ class Calculator {
         if(this.screen.value === "" && this.subresult.innerHTML.length == 0) return;
 
         this.result = eval(this.operations);
-        this.subresult.innerHTML += " =";
+        this.addSubresult(" =");
         this.screen.value = this.result.toString();
         this.operations = this.result.toString();
         this.clearSubresult = true;
