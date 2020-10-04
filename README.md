@@ -1,1 +1,3 @@
-# This is an typescript calculator
+# Simple typescript calculator
+
+This is a simple windows clone calculator in typescript.
