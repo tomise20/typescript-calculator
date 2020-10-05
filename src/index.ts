@@ -32,6 +32,7 @@ class Calculator {
                 break;
             case "clearSubresult":
                 this.subresult.innerHTML = "";
+                this.operations = "";
                 break;
             case "dot":
                 this.screen.value += ".";
@@ -115,9 +116,6 @@ class Calculator {
         } else {
             this.screen.value += param;
         }
-
-        console.log(`add number: ${this.operations}`);
-        
     }
 
     addSubresult(text: string, change: boolean = false) {
@@ -278,8 +276,6 @@ class Calculator {
         this.operations = "";
         this.clearSubresult = true;
         this.lastOperationsIsFunc = false;
-
-        console.log(`result: ${this.operations}`);
     }
 
     isCharDigit = (n: any) => !!n.trim() && n > -1;
