@@ -168,8 +168,9 @@ class Calculator {
     reset(): void {
         this.screen.value = "0";
         this.operations = "";
-        this.subresult.innerHTML = "";
+        this.addSubresult("", true);
         this.clearScreen = true;
+        this.clearSubresult = false;
     }
 
     pow(): void {
