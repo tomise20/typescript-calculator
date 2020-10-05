@@ -36,8 +36,6 @@ class Calculator {
                 break;
             case "dot":
                 this.screen.value += ".";
-                this.operations += ".";
-                this.subresult.innerHTML += ".";
                 break;
             case "equal":
                 this.showResult();
@@ -171,6 +169,7 @@ class Calculator {
         this.addSubresult("", true);
         this.clearScreen = true;
         this.clearSubresult = false;
+        this.lastOperationsIsFunc = false;
     }
 
     pow(): void {
