@@ -7,6 +7,7 @@ class Calculator {
         this.operations = "";
         this.clearSubresult = false;
         this.lastOperationsIsFunc = false;
+        this.clearScreen = true;
         this.isCharDigit = (n) => !!n.trim() && n > -1;
         document.querySelectorAll("span[data-type='number']").forEach(item => {
             item.addEventListener('click', _ => this.addNumberOnScreen(item.textContent));
@@ -38,6 +39,9 @@ class Calculator {
                 break;
             case "equal":
                 this.showResult();
+                break;
+            case "negate":
+                this.negate();
                 break;
             case "plus":
                 this.addOperations("+");
@@ -74,8 +78,6 @@ class Calculator {
                     break;
                 case ".":
                     this.screen.value += key;
-                    this.operations += key;
-                    this.subresult.innerHTML += key;
                     break;
                 case "Enter":
                     this.showResult();
@@ -103,15 +105,14 @@ class Calculator {
             this.subresult.innerHTML = this.screen.value;
             this.clearSubresult = false;
         }
-        if (this.screen.value === "0") {
+        if (this.clearScreen) {
             this.screen.value = param;
-            this.addSubresult(param, true);
+            this.clearScreen = false;
         }
         else {
             this.screen.value += param;
-            this.addSubresult(param);
         }
-        this.operations += param;
+        console.log(`add number: ${this.operations}`);
     }
     addSubresult(text, change = false) {
         if (change)
@@ -122,13 +123,23 @@ class Calculator {
     addOperations(key = null) {
         if (this.screen.value === "")
             return;
-        if (this.clearSubresult) {
-            this.addSubresult(this.screen.value, true);
+        if (this.clearSubresult && !this.lastOperationsIsFunc) {
+            this.addSubresult((this.screen.value + " " + key + " "), true);
             this.clearSubresult = false;
         }
-        this.operations += key;
-        this.addSubresult(` ${key} `);
-        this.screen.value = "";
+        else if (this.lastOperationsIsFunc) {
+            this.addSubresult((" " + key + " "));
+        }
+        else {
+            this.addSubresult(` ${this.screen.value} ${key} `);
+        }
+        if (this.lastOperationsIsFunc) {
+            this.operations += key;
+        }
+        else {
+            this.operations += this.screen.value + key;
+        }
+        this.clearScreen = true;
     }
     checkOperations() {
         let length = this.operations.length;
@@ -140,10 +151,20 @@ class Calculator {
             temp = this.operations;
         return temp;
     }
+    negate() {
+        let temp = parseFloat(this.screen.value);
+        if (temp < 0) {
+            this.screen.value = (Math.abs(temp)).toString();
+        }
+        else {
+            this.screen.value = (-Math.abs(temp)).toString();
+        }
+    }
     reset() {
         this.screen.value = "0";
         this.operations = "";
         this.subresult.innerHTML = "";
+        this.clearScreen = true;
     }
     pow() {
         let num;
@@ -228,13 +249,20 @@ class Calculator {
         this.lastOperationsIsFunc = true;
     }
     showResult() {
+        let lastChar = this.operations.substr(this.operations.length - 1);
         if (this.screen.value === "" && this.subresult.innerHTML.length == 0)
             return;
+        if (!this.isCharDigit(lastChar)) {
+            this.operations += this.screen.value;
+            this.addSubresult(this.screen.value);
+        }
         this.result = eval(this.operations);
         this.addSubresult(" =");
         this.screen.value = this.result.toString();
-        this.operations = this.result.toString();
+        this.operations = "";
         this.clearSubresult = true;
+        this.lastOperationsIsFunc = false;
+        console.log(`result: ${this.operations}`);
     }
 }
 new Calculator();
